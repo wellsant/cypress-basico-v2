@@ -98,18 +98,57 @@ describe('Central de Atendimento ao Cliente TAT', () => {
   it('Marca cada tipo de atendimento', () => {
     cy.get('input[type="radio"]')
       .should('have.length', 3)
-      .each(function($radio){
+      .each(function ($radio) {
         cy.wrap($radio).check()
       })
   })
-  
-  it.only('Marca ambos os checkboxes, depois desmarca o ultimo', () =>{
-      cy.get('input[type="checkbox"]')
+
+  it('Marca ambos os checkboxes, depois desmarca o ultimo', () => {
+    cy.get('input[type="checkbox"]')
       .check()
       .should('be.checked')
       .last()
       .uncheck()
       .should('not.be.checked')
+  })
+
+  it('Seleciona um arquivo da pasta fixtures', () => {
+    cy.get('input[type="file"]')
+      .should('not.have.value')
+      .selectFile('./cypress/fixtures/example.json')
+      .should(function ($input) {
+        expect($input[0].files[0].name).to.equal('example.json')
+      })
+  })
+
+  it('Seleciona um arquivo simulando um drag-and-drop', () => {
+    cy.get('input[type="file"]')
+      .should('not.have.value')
+      .selectFile('./cypress/fixtures/example.json', { action: 'drag-drop' })//Simula arrastar um arquivo para o campo de upload
+      .should(function ($input) {
+        expect($input[0].files[0].name).to.equal('example.json')
+      })
+  })
+
+  it('Seleciona um arquivo utilizando uma fixture para a qual foi dada um alias', () => {
+    cy.fixture('example.json').as('sampleFile')
+    cy.get('input[type="file"]')
+      .selectFile('@sampleFile')
+      .should(function ($input) {
+        expect($input[0].files[0].name).to.equal('example.json')
+      })
+  })
+
+  it('Verifica qua a politica de privacidade abre em outra aba sem a necessidade', () => {
+    cy.get('#privacy a').should('have.attr', 'target', '_blank')
+  })
+
+  it('Acessa a politica de privacidade removendo o target e então clicando no link', () => {
+    cy.get('#privacy a')
+      .invoke('removeAttr', 'target')
+      .click() 
+
+      cy.contains('Talking About Testing').should('be.visible')
   })
 })
 
