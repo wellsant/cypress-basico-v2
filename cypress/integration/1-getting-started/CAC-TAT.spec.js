@@ -11,13 +11,18 @@ describe('Central de Atendimento ao Cliente TAT', () => {
 
   it('Preenche os campos obrigatórios e envia o formulário', () => {
     const longText = 'Teste, teste, teste, teste, teste'
+    
+    cy.clock()
+
     cy.get('#firstName').type('Wellington')
     cy.get('#lastName').type('Nascimento')
     cy.get('#email').type('wellington_santanna@outlook.com')
     cy.get('#open-text-area').type(longText, { delay: 0 })
     cy.get('button[type="submit"]').click()
 
-    cy.get('.success').should('be.visible')
+    cy.tick(3000)
+
+    cy.get('.success').should('not.be.visible') 
   })
 
   it('Exibe mensagem de erro ao submeter o formulário com um email com formatação inválida', () => {
